@@ -1,0 +1,4 @@
+torch
+numpy
+
+kerbal-rl @ git+https://github.com/jinPrelude/kerbal-rl
