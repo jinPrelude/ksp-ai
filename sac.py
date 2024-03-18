@@ -39,9 +39,13 @@ class ReplayBuffer():
             done_mask = 0.0 if done else 1.0 
             done_mask_lst.append([done_mask])
         
-        return torch.tensor(s_lst, dtype=torch.float), torch.tensor(a_lst, dtype=torch.float), \
-                torch.tensor(r_lst, dtype=torch.float), torch.tensor(s_prime_lst, dtype=torch.float), \
-                torch.tensor(done_mask_lst, dtype=torch.float)
+        s_lst = torch.tensor(np.array(s_lst, dtype=np.float32), dtype=torch.float)
+        a_lst = torch.tensor(np.array(a_lst, dtype=np.float32), dtype=torch.float)
+        r_lst = torch.tensor(np.array(r_lst, dtype=np.float32), dtype=torch.float)
+        s_prime_lst = torch.tensor(np.array(s_prime_lst, dtype=np.float32), dtype=torch.float)
+        done_mask_lst = torch.tensor(np.array(done_mask_lst, dtype=np.float32), dtype=torch.float)
+
+        return s_lst, a_lst, r_lst, s_prime_lst, done_mask_lst
     
     def size(self):
         return len(self.buffer)
@@ -49,7 +53,7 @@ class ReplayBuffer():
 class PolicyNet(nn.Module):
     def __init__(self, learning_rate):
         super(PolicyNet, self).__init__()
-        self.fc1 = nn.Linear(4, 128)
+        self.fc1 = nn.Linear(5, 128)
         self.fc_mu = nn.Linear(128,1)
         self.fc_std  = nn.Linear(128,1)
         self.optimizer = optim.Adam(self.parameters(), lr=learning_rate)
@@ -91,7 +95,7 @@ class PolicyNet(nn.Module):
 class QNet(nn.Module):
     def __init__(self, learning_rate):
         super(QNet, self).__init__()
-        self.fc_s = nn.Linear(4, 64)
+        self.fc_s = nn.Linear(5, 64)
         self.fc_a = nn.Linear(1,64)
         self.fc_cat = nn.Linear(128,32)
         self.fc_out = nn.Linear(32,1)
@@ -148,6 +152,7 @@ def main():
         while not done:
             a, log_prob= pi(torch.from_numpy(s).float())
             s_prime, r, done, info = env.step([a.item()])
+            # print(f"state: {s} | reward: {r}")
             memory.put((s, a.item(), r/10.0, s_prime, done))
             score +=r
             s = s_prime
