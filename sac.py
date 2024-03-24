@@ -39,13 +39,15 @@ class ReplayBuffer():
             done_mask = 0.0 if done else 1.0 
             done_mask_lst.append([done_mask])
         
-        s_lst = torch.tensor(np.array(s_lst, dtype=np.float32), dtype=torch.float)
-        a_lst = torch.tensor(np.array(a_lst, dtype=np.float32), dtype=torch.float)
-        r_lst = torch.tensor(np.array(r_lst, dtype=np.float32), dtype=torch.float)
-        s_prime_lst = torch.tensor(np.array(s_prime_lst, dtype=np.float32), dtype=torch.float)
-        done_mask_lst = torch.tensor(np.array(done_mask_lst, dtype=np.float32), dtype=torch.float)
+        s_lst = np.array(s_lst, dtype=np.float32)
+        a_lst = np.array(a_lst, dtype=np.float32)
+        r_lst = np.array(r_lst, dtype=np.float32)
+        s_prime_lst = np.array(s_prime_lst, dtype=np.float32)
+        done_mask_lst = np.array(done_mask_lst, dtype=np.float32)
 
-        return s_lst, a_lst, r_lst, s_prime_lst, done_mask_lst
+        return torch.tensor(s_lst, dtype=torch.float), torch.tensor(a_lst, dtype=torch.float), \
+                torch.tensor(r_lst, dtype=torch.float), torch.tensor(s_prime_lst, dtype=torch.float), \
+                torch.tensor(done_mask_lst, dtype=torch.float)
     
     def size(self):
         return len(self.buffer)
